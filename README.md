@@ -51,8 +51,12 @@ open Truelancer_Chat_App.xcodeproj
 ---
 
 ## 📸 Screenshots
-![Simulator Screenshot - iPhone 16 Pro - 2025-04-22 at 02 10 47](https://github.com/user-attachments/assets/06a59153-d75d-4760-977d-e23cd94dc628)
-![Simulator Screenshot - iPhone 16 Pro - 2025-04-22 at 02 10 33](https://github.com/user-attachments/assets/4fb66f11-22c3-4ac2-b19c-1afa84eb9848)
+
+<p float="left">
+  <img src="https://github.com/user-attachments/assets/4fb66f11-22c3-4ac2-b19c-1afa84eb9848" width="30%" />
+  <img src="https://github.com/user-attachments/assets/06a59153-d75d-4760-977d-e23cd94dc628" width="30%" />
+</p>
+
 
 ---
 
