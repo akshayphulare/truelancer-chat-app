@@ -18,17 +18,17 @@ class ChannelManager: ObservableObject {
         for name in channelNames {
             let socket = ChannelWebSocket(name: name)
             socket.onMessageReceived = { [weak self] text in
-                self?.updateChannel(name: name, newMessage: text, isIncoming: true, isQueued: false)
+                self?.updateChannel(name: name, newMessage: text, isIncoming: true, isQueued: false, markUnread: true)
             }
             sockets[name] = socket
         }
     }
 
-    func updateChannel(name: String, newMessage: String, isIncoming: Bool, isQueued: Bool) {
+    func updateChannel(name: String, newMessage: String, isIncoming: Bool, isQueued: Bool, markUnread: Bool) {
         if let index = channels.firstIndex(where: { $0.name == name }) {
             let prefix = isQueued ? "🕓" : (isIncoming ? "🔻" : "🔺")
             channels[index].recentMessage = "\(prefix) \(newMessage)"
-            if isIncoming {
+            if isIncoming && markUnread {
                 channels[index].unreadCount += 1
             }
         }

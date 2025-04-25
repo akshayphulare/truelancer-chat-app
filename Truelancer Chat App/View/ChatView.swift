@@ -8,44 +8,6 @@
 
 import SwiftUI
 
-//struct ChatView: View {
-//    @StateObject private var viewModel: ChatViewModel
-//
-//    init(channelName: String, manager: ChatListViewModel) {
-//        _viewModel = StateObject(wrappedValue: ChatViewModel(channelName: channelName, manager: manager))
-//    }
-//
-//    var body: some View {
-//        VStack {
-//            ScrollView {
-//                LazyVStack(alignment: .leading) {
-//                    ForEach(viewModel.messages, id: \.self) { message in
-//                        Text(message)
-//                            .padding(8)
-//                            .background(Color.gray.opacity(0.15))
-//                            .cornerRadius(8)
-//                    }
-//                }.padding()
-//            }
-//
-//            HStack {
-//                TextField("Message...", text: $viewModel.inputText)
-//                    .textFieldStyle(RoundedBorderTextFieldStyle())
-//
-//                Button("Send") {
-//                    viewModel.sendMessage()
-//                }
-//            }.padding()
-//        }
-//        .navigationTitle(viewModel.channelName)
-//        .navigationBarTitleDisplayMode(.inline)
-//        .onAppear {
-//            viewModel.markAsRead()
-//        }
-//    }
-//}
-
-
 struct ChatView: View {
     @StateObject private var viewModel: ChatViewModel
     @EnvironmentObject private var networkMonitor: NetworkMonitor
@@ -121,7 +83,11 @@ struct ChatView: View {
         .navigationTitle(viewModel.channelName)
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
+            viewModel.isActive = true
             viewModel.markAsRead()
+        }
+        .onDisappear {
+            viewModel.isActive = false
         }
         .alert(item: $viewModel.errorMessage) { alert in
             Alert(

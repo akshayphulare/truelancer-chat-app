@@ -6,15 +6,19 @@
 //
 
 import Foundation
+import Combine
 
 @MainActor
 class ChatViewModel: ObservableObject {
     @Published var inputText: String = ""
     @Published var errorMessage: AlertMessage?
 
-    var socketMessages: [ChatMessage] {
-        channelSocket.messages
-    }
+//    var socketMessages: [ChatMessage] {
+//        channelSocket.messages
+//    }
+    @Published var socketMessages: [ChatMessage] = []
+    private var cancellable: AnyCancellable?
+    @Published var isActive = false
 
     let channelName: String
     private let channelSocket: ChannelWebSocket
@@ -27,12 +31,28 @@ class ChatViewModel: ObservableObject {
 
         self.channelSocket.onMessageReceived = { [weak self] text in
             guard let self else { return }
-            self.manager.updateChannel(name: channelName, newMessage: text, isIncoming: true, isQueued: false)
+
+            let isUnread = !self.isActive
+            self.manager.updateChannel(name: channelName, newMessage: text, isIncoming: true, isQueued: false, markUnread: isUnread)
         }
 
         self.channelSocket.onError = { [weak self] error in
             self?.errorMessage = AlertMessage(message: error.localizedDescription)
         }
+        
+        self.channelSocket.onQueueMessageSent = { [weak self] text in
+            guard let self else { return }
+            
+            let isUnread = !self.isActive
+            self.manager.updateChannel(name: channelName, newMessage: text, isIncoming: false, isQueued: false, markUnread: isUnread)
+        }
+        
+        self.cancellable = channelSocket.$messages
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] newMessages in
+                self?.socketMessages = newMessages
+            }
+
     }
 
     func sendMessage() {
@@ -40,7 +60,7 @@ class ChatViewModel: ObservableObject {
         guard !text.isEmpty else { return }
         channelSocket.send(text)
         let isQueued = !NetworkMonitor.shared.effectiveConnectionStatus
-        manager.updateChannel(name: channelName, newMessage: text, isIncoming: false, isQueued: isQueued)
+        manager.updateChannel(name: channelName, newMessage: text, isIncoming: false, isQueued: isQueued, markUnread: false)
         inputText = ""
     }
 

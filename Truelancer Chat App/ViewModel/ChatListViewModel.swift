@@ -31,8 +31,8 @@ class ChatListViewModel: ObservableObject {
         manager.socket(for: channel)
     }
 
-    func updateChannel(name: String, newMessage: String, isIncoming: Bool, isQueued: Bool) {
-        manager.updateChannel(name: name, newMessage: newMessage, isIncoming: isIncoming, isQueued: isQueued)
+    func updateChannel(name: String, newMessage: String, isIncoming: Bool, isQueued: Bool, markUnread: Bool) {
+        manager.updateChannel(name: name, newMessage: newMessage, isIncoming: isIncoming, isQueued: isQueued, markUnread: markUnread)
     }
 
     func markAsRead(channelName: String) {

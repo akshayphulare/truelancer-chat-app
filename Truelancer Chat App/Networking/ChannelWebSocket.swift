@@ -28,6 +28,8 @@ class ChannelWebSocket: ObservableObject {
     private var cancellable: AnyCancellable?
     private var messageQueue: [String] = []
 
+    var onQueueMessageSent: ((String) -> Void)?
+    
     init(name: String) {
         self.name = name
         self.url = Constants.socketURL(for: name)
@@ -99,8 +101,14 @@ class ChannelWebSocket: ObservableObject {
                     DispatchQueue.main.async {
                         // ✅ Replace the queued message with a non-queued version
                         if let index = self.messages.firstIndex(where: { $0.text == message && $0.isQueued }) {
-                            self.messages[index] = ChatMessage(text: message, isSentByUser: true, isQueued: false)
+                            let updatedMessage = ChatMessage(text: message, isSentByUser: true, isQueued: false)
+                            self.messages.remove(at: index)
+                            self.messages.insert(updatedMessage, at: index)
+                            
+                            // ✅ Inform view model to refresh preview
+                            self.onQueueMessageSent?(message)
                         }
+                        
                     }
                 }
             }
